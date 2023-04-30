@@ -42,7 +42,7 @@ type Connection interface {
 // QueryMutator is an additional interface that could be implemented by driver.
 // This adds ability to the driver it can mutate query before run.
 type QueryMutator interface {
-	MutateQuery(ctx context.Context, req backend.DataQuery) (context.Context, backend.DataQuery)
+	MutateQuery(ctx context.Context, req backend.DataQuery, pluginContext backend.PluginContext) (context.Context, backend.DataQuery)
 }
 
 // ResponseMutator is an additional interface that could be implemented by driver.

@@ -184,7 +184,7 @@ func (ds *SQLDatasource) getDBConnectionFromQuery(q *Query, datasourceUID string
 // handleQuery will call query, and attempt to reconnect if the query failed
 func (ds *SQLDatasource) handleQuery(ctx context.Context, req backend.DataQuery, pluginContext *backend.PluginContext) (data.Frames, error) {
 	if queryMutator, ok := ds.c.(QueryMutator); ok {
-		ctx, req = queryMutator.MutateQuery(ctx, req)
+		ctx, req = queryMutator.MutateQuery(ctx, req, *pluginContext)
 	}
 
 	// Convert the backend.DataQuery into a Query object
