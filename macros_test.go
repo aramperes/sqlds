@@ -42,6 +42,8 @@ func (h *MockDB) Timeout(backend.DataSourceInstanceSettings) time.Duration {
 func TestInterpolate(t *testing.T) {
 	tableName := "my_table"
 	tableColumn := "my_col"
+	userLogin := "my_user"
+
 	type test struct {
 		name   string
 		input  string
@@ -69,6 +71,7 @@ func TestInterpolate(t *testing.T) {
 		{input: "select * from foo where $__timeFrom(cast(sth as timestamp))", output: "select * from foo where cast(sth as timestamp) >= '0001-01-01T00:00:00Z'", name: "default timeFrom macro"},
 		{input: "select * from foo where $__timeGroup(time,minute)", output: "select * from foo where grouped!", name: "overriden timeGroup macro"},
 		{input: "select $__column from $__table", output: "select my_col from my_table", name: "table and column macros"},
+		{input: "select $__column from $__table where owner = '$__userLogin'", output: "select my_col from my_table where owner = 'my_user'", name: "table, column, and userLogin macros"},
 		{input: "select * from table where ( datetime >= $__foo() ) AND ( datetime <= $__foo() ) limit 100", output: "select * from table where ( datetime >= bar ) AND ( datetime <= bar ) limit 100", name: "macro functions inside more complex clauses"},
 		{input: "select * from table where ( datetime >= $__foo ) AND ( datetime <= $__foo ) limit 100", output: "select * from table where ( datetime >= bar ) AND ( datetime <= bar ) limit 100", name: "macros inside more complex clauses"},
 	}
@@ -79,6 +82,9 @@ func TestInterpolate(t *testing.T) {
 				RawSQL: tc.input,
 				Table:  tableName,
 				Column: tableColumn,
+				User: &backend.User{
+					Login: userLogin,
+				},
 			}
 			interpolatedQuery, err := Interpolate(&driver, query)
 			require.Nil(t, err)

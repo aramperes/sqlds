@@ -42,9 +42,10 @@ type Query struct {
 	FillMissing   *data.FillMissing `json:"fillMode,omitempty"`
 
 	// Macros
-	Schema string `json:"schema,omitempty"`
-	Table  string `json:"table,omitempty"`
-	Column string `json:"column,omitempty"`
+	Schema string        `json:"schema,omitempty"`
+	Table  string        `json:"table,omitempty"`
+	Column string        `json:"column,omitempty"`
+	User   *backend.User `json:"-"`
 }
 
 // WithSQL copies the Query, but with a different RawSQL value.
@@ -61,11 +62,12 @@ func (q *Query) WithSQL(query string) *Query {
 		Schema:         q.Schema,
 		Table:          q.Table,
 		Column:         q.Column,
+		User:           q.User,
 	}
 }
 
 // GetQuery returns a Query object given a backend.DataQuery using json.Unmarshal
-func GetQuery(query backend.DataQuery) (*Query, error) {
+func GetQuery(query backend.DataQuery, pluginContext *backend.PluginContext) (*Query, error) {
 	model := &Query{}
 
 	if err := json.Unmarshal(query.JSON, &model); err != nil {
@@ -85,6 +87,7 @@ func GetQuery(query backend.DataQuery) (*Query, error) {
 		Schema:         model.Schema,
 		Table:          model.Table,
 		Column:         model.Column,
+		User:           pluginContext.User,
 	}, nil
 }
 

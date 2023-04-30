@@ -117,6 +117,18 @@ func macroColumn(query *Query, args []string) (string, error) {
 	return query.Column, nil
 }
 
+// Default macro to return the user login.
+// Example:
+//
+//	$__userLogin => "admin"
+func macroUserLogin(query *Query, args []string) (string, error) {
+	if query.User != nil {
+		return query.User.Login, nil
+	}
+
+	return "", nil
+}
+
 var DefaultMacros Macros = Macros{
 	"timeFilter": macroTimeFilter,
 	"timeFrom":   macroTimeFrom,
@@ -124,6 +136,7 @@ var DefaultMacros Macros = Macros{
 	"timeTo":     macroTimeTo,
 	"table":      macroTable,
 	"column":     macroColumn,
+	"userLogin":  macroUserLogin,
 }
 
 func trimAll(s []string) []string {
